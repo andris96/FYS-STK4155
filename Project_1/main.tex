@@ -1,0 +1,191 @@
+% *** LaTeX-mal for labrapporter i fysikk, v.14.08.2017 ***
+
+% Dette er et eksempel på et LaTeX-dokument, og du kan bruke dette som et utgangspunkt for din egen rapport. Merk at for å kunne kompilere dokumentet uten feil, må du også laste ned filen pendel-oppdatert.pdf.
+%
+% Her i starten og videre nedover i teksten under har vi lagt inn en god del linjer som starter med tegnet "%". Disse linjene er kommentarer og synes ikke i det ferdige dokumentet. Vi kan også sette inn et kommentartegn midt på en linje. Alt som kommer før tegnet brukes da i kompileringen, mens resten av linja er en kommentar.
+%
+% Kildefilen (.tex-filen) begynner alltid med et "preabmle". Her setter man opp innstillingene som brukes av kompilatoren til å utforme det ferdige dokumentet. Selve dokumentet begynner ikke før vi skriver \begin{document}.
+%
+% Dokumentasjon for alle pakker finnes på CTAN (http://www.ctan.org/)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Preamble
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[5p,sort&compress]{elsarticle}
+% 5p gir 2 kolonner pr side. 1p gir 1 kolonne pr side.
+% Valget sort&compress gjør at referansen [1,2,3] settes som [1-3].
+% Andre innstillinger for "klassen" elsarticle finnes i dokumentasjonen på CTAN (http://www.ctan.org/pkg/elsarticle)
+
+% Klassen elsarticle er laget for bruk i engelskspråklige tiksskrift. I blokken under bruker vi litt lavnivå TeX-magi for å redefinere bunnteksten på tittelsiden. Ikke bekymre deg for denne biten med kode, det som kommer lengere nede i dokumentet er lettere å forstå!
+\makeatletter
+\def\ps@pprintTitle{%
+ \let\@oddhead\@empty
+ \let\@evenhead\@empty
+ \def\@oddfoot{\footnotesize\itshape
+      	% Bytt ut "Veileder" med navnet på veilederen din!
+       \hfill\today}%
+ \let\@evenfoot\@oddfoot}
+\makeatother
+
+% Encoding for input i tex-filen og encoding for output i pdf-filen
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+
+
+% Last inn en font-pakke. Her bruker vi standard-fonten til LaTeX.
+\usepackage{lmodern}
+
+% LaTeX gjør mye av typografien for deg, blant annet orddeling ved linjeskift og automatisk utfylling av endel tekst. For å kunne gjøre dette må kompilatoren vite hvilket språk dokumentet er skrevet på.
+\usepackage[english]{babel}
+\usepackage[fixlanguage]{babelbib}
+% Til tross for at vi har fortalt kompilatoren at vi skriver på engelsk må vi fortelle den eksplisitt at vi ønsker at seksjonen "abstract" skal kalles "sammendrag"
+\renewenvironment{abstract}
+{\global\setbox\absbox=\vbox\bgroup
+\hsize=\textwidth\def\baselinestretch{1}%
+\noindent\unskip\textbf{Summary}
+\par\medskip\noindent\unskip\ignorespaces}
+{\egroup}
+% Mikrotypografiske optimeringer
+\usepackage[babel=true]{microtype}
+
+
+% AMS-utvidelsene for å håndtere matematikk
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{pifont}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage{chngcntr}
+\usepackage{tasks}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{booktabs}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{xfrac}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage[toc,page]{appendix}
+\usepackage{listings}
+\usepackage{comment}
+% Måltall og enheter er spesielle typografiske dyr som reguleres av strenge regler. For å gjøre det enklere å håndtere tall og enheter på riktig måte bruker vi pakken siunitx.
+\usepackage{siunitx}
+% Vi tilpasser standardinstillingene til pakken til norske regler.
+\sisetup{
+exponent-product = \cdot,
+output-decimal-marker  =  {,}, % Pass på å endre desimalskilletegnet til punktum om du skriver på engelsk!
+separate-uncertainty = true,
+per-mode = symbol,
+group-digits = false,
+}
+
+% Figurer og tabeller
+\usepackage{graphicx} % Denne pakken er standard for å kunne laste inn figurfiler med ulike formater
+% Løsne opp på de alt for strenge standardinstillingene for plassering av figurer og tabeller (floats) i LaTeX-kjernen
+\renewcommand{\topfraction}{.85}
+\renewcommand{\bottomfraction}{.7}
+\renewcommand{\textfraction}{.15}
+\renewcommand{\floatpagefraction}{.66}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{10}
+\usepackage{flafter} % For å plassere floats i PDFen første sted LaTeX tillater etter det punktet de er definert i TeX-filen. Om du definerer figuren i TeX-filen rett etter at du refererer til den for første gang vil denne pakken sørge for at de fleste floats havner på greie steder
+\usepackage{booktabs} % Denne pakken gir tilgang på endel ekstra kommandoer som legger til rette for god skikk og bruk i tabellformatering.
+\usepackage{multirow}
+\usepackage[font=small,labelfont=bf]{caption}	% Justering av LaTeX standarder for figurtekst og tabelltekst.
+\usepackage{algorithm2e}
+\usepackage{algorithm}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{varwidth}
+\counterwithin{figure}{section}
+
+
+\lstset{
+frame = single,
+language=Pascal,}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=true,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Hyperreferanser
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+% Noen av navnene for autoreferanser mangler på norsk, så vi ordner opp i det.
+%\addto\extrasnorsk{%
+%\def\figureautorefname{figur}%
+%\def\tableautorefname{tabell}%
+%\def\sectionautorefname{avsnitt}%
+%\def\subsectionautorefname{underavsnitt}%
+%}
+% Vi endrer fonten som brukes for URLer til den vanlige tekstfonten.
+\urlstyle{same}
+% legge til pdf-er
+\usepackage{pdfpages}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Selve dokumentet
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% I "front matter" angir vi formalia knyttet til dokumentet -- tittel, forfatter, tilknytning og sammendrag
+\begin{frontmatter}
+
+
+\title{FYS-STK4155 - Project 1}
+% I forfatterlisten legger vi inn "ikke-brytende" mellomrom etter initialene
+\author[CS:PH]{A.~Isene}
+\author[CS:IM]{C.D.~Nguyen}
+\author[ROBOTIKK]{D.~Fremming}
+
+\address[CS:PH]{UiO, Computational Science: Physics.}
+\address[CS:IM]{UiO, Computational Science: Imaging and Biomedical Computing.}
+\address[ROBOTIKK]{UiO, Robotics and Intelligent Systems.}
+
+\begin{abstract}
+    This is the summary
+\end{abstract}
+
+\end{frontmatter}
+
+\newpage
+
+
+\newpage
+\input{Project_1/sections/exercise1}
+\hfill\break
+\input{Project_1/sections/exercise2}
+
+
+\end{document}
