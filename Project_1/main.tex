@@ -1,191 +1,251 @@
-% *** LaTeX-mal for labrapporter i fysikk, v.14.08.2017 ***
 
-% Dette er et eksempel på et LaTeX-dokument, og du kan bruke dette som et utgangspunkt for din egen rapport. Merk at for å kunne kompilere dokumentet uten feil, må du også laste ned filen pendel-oppdatert.pdf.
-%
-% Her i starten og videre nedover i teksten under har vi lagt inn en god del linjer som starter med tegnet "%". Disse linjene er kommentarer og synes ikke i det ferdige dokumentet. Vi kan også sette inn et kommentartegn midt på en linje. Alt som kommer før tegnet brukes da i kompileringen, mens resten av linja er en kommentar.
-%
-% Kildefilen (.tex-filen) begynner alltid med et "preabmle". Her setter man opp innstillingene som brukes av kompilatoren til å utforme det ferdige dokumentet. Selve dokumentet begynner ikke før vi skriver \begin{document}.
-%
-% Dokumentasjon for alle pakker finnes på CTAN (http://www.ctan.org/)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Preamble
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[aps,rmp,reprint,amsmath,amssymb,graphicx,longbibliography]{revtex4-1}
 
-\documentclass[5p,sort&compress]{elsarticle}
-% 5p gir 2 kolonner pr side. 1p gir 1 kolonne pr side.
-% Valget sort&compress gjør at referansen [1,2,3] settes som [1-3].
-% Andre innstillinger for "klassen" elsarticle finnes i dokumentasjonen på CTAN (http://www.ctan.org/pkg/elsarticle)
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{wrapfig}
+\usepackage{array}
+\usepackage{listings}
+\usepackage[para,online,flushleft]{threeparttablex}
+\usepackage{booktabs,dcolumn}
+\usepackage{color}
 
-% Klassen elsarticle er laget for bruk i engelskspråklige tiksskrift. I blokken under bruker vi litt lavnivå TeX-magi for å redefinere bunnteksten på tittelsiden. Ikke bekymre deg for denne biten med kode, det som kommer lengere nede i dokumentet er lettere å forstå!
+
+\usepackage{textpos}
+\usepackage{booktabs}
+\usepackage{multirow,bigdelim}
+\usepackage{float}
+
+\usepackage{upgreek} % upalpha in Saxena2021 Reference
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\hypersetup{breaklinks=true,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=magenta,urlcolor=blue}
+
+\usepackage{xcolor}
+%\newcommand{\contrib}[1]{\textcolor{red}{#1}}
+%\newcommand{\comment}[1]{\textcolor{blue}{#1}}
+%\newcommand{\WN}[1]{{\color{red} #1}}
+
 \makeatletter
-\def\ps@pprintTitle{%
- \let\@oddhead\@empty
- \let\@evenhead\@empty
- \def\@oddfoot{\footnotesize\itshape
-      	% Bytt ut "Veileder" med navnet på veilederen din!
-       \hfill\today}%
- \let\@evenfoot\@oddfoot}
+\def\@bibdataout@aps{%
+\immediate\write\@bibdataout{%
+@CONTROL{%
+apsrev41Control%
+\longbibliography@sw{%
+    ,author="08",editor="1",pages="1",title="0",year="1"%
+    }{%
+    ,author="08",editor="1",pages="1",title="",year="1"%
+    }%
+  }%
+}%
+\if@filesw \immediate \write \@auxout {\string \citation {apsrev41Control}}\fi
+}
 \makeatother
 
-% Encoding for input i tex-filen og encoding for output i pdf-filen
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{textcomp}
 
+%\usepackage[left]{lineno}
+%\linenumbers
 
-
-% Last inn en font-pakke. Her bruker vi standard-fonten til LaTeX.
-\usepackage{lmodern}
-
-% LaTeX gjør mye av typografien for deg, blant annet orddeling ved linjeskift og automatisk utfylling av endel tekst. For å kunne gjøre dette må kompilatoren vite hvilket språk dokumentet er skrevet på.
-\usepackage[english]{babel}
-\usepackage[fixlanguage]{babelbib}
-% Til tross for at vi har fortalt kompilatoren at vi skriver på engelsk må vi fortelle den eksplisitt at vi ønsker at seksjonen "abstract" skal kalles "sammendrag"
-\renewenvironment{abstract}
-{\global\setbox\absbox=\vbox\bgroup
-\hsize=\textwidth\def\baselinestretch{1}%
-\noindent\unskip\textbf{Summary}
-\par\medskip\noindent\unskip\ignorespaces}
-{\egroup}
-% Mikrotypografiske optimeringer
-\usepackage[babel=true]{microtype}
-
-
-% AMS-utvidelsene for å håndtere matematikk
-\usepackage{amsmath}
-\usepackage{algpseudocode}
-\usepackage{amssymb}
-\usepackage{bm}
-\usepackage{pifont}
-\usepackage{tabularx}
-\usepackage{multirow}
-\usepackage{siunitx}
-\usepackage{chngcntr}
-\usepackage{tasks}
-\usepackage{subcaption}
-\usepackage{caption}
-\usepackage{booktabs}
-\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
-\usepackage{booktabs}
-\usepackage{colortbl}
-\usepackage{xcolor}
-\usepackage{xfrac}
-\usepackage{multicol}
-\usepackage{float}
-\usepackage[toc,page]{appendix}
-\usepackage{listings}
-\usepackage{comment}
-% Måltall og enheter er spesielle typografiske dyr som reguleres av strenge regler. For å gjøre det enklere å håndtere tall og enheter på riktig måte bruker vi pakken siunitx.
-\usepackage{siunitx}
-% Vi tilpasser standardinstillingene til pakken til norske regler.
-\sisetup{
-exponent-product = \cdot,
-output-decimal-marker  =  {,}, % Pass på å endre desimalskilletegnet til punktum om du skriver på engelsk!
-separate-uncertainty = true,
-per-mode = symbol,
-group-digits = false,
-}
-
-% Figurer og tabeller
-\usepackage{graphicx} % Denne pakken er standard for å kunne laste inn figurfiler med ulike formater
-% Løsne opp på de alt for strenge standardinstillingene for plassering av figurer og tabeller (floats) i LaTeX-kjernen
-\renewcommand{\topfraction}{.85}
-\renewcommand{\bottomfraction}{.7}
-\renewcommand{\textfraction}{.15}
-\renewcommand{\floatpagefraction}{.66}
-\setcounter{topnumber}{3}
-\setcounter{bottomnumber}{2}
-\setcounter{totalnumber}{10}
-\usepackage{flafter} % For å plassere floats i PDFen første sted LaTeX tillater etter det punktet de er definert i TeX-filen. Om du definerer figuren i TeX-filen rett etter at du refererer til den for første gang vil denne pakken sørge for at de fleste floats havner på greie steder
-\usepackage{booktabs} % Denne pakken gir tilgang på endel ekstra kommandoer som legger til rette for god skikk og bruk i tabellformatering.
-\usepackage{multirow}
-\usepackage[font=small,labelfont=bf]{caption}	% Justering av LaTeX standarder for figurtekst og tabelltekst.
-\usepackage{algorithm2e}
-\usepackage{algorithm}
-\usepackage{amsmath}
-\usepackage{algpseudocode}
-\usepackage{varwidth}
-\counterwithin{figure}{section}
-
-
-\lstset{
-frame = single,
-language=Pascal,}
-
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-
-\lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,
-    breaklines=true,
-    captionpos=b,
-    keepspaces=true,
-    numbersep=5pt,
-    showspaces=false,
-    showstringspaces=false,
-    showtabs=true,
-    tabsize=2
-}
-
-\lstset{style=mystyle}
-
-% Hyperreferanser
-\usepackage[colorlinks=true,allcolors=blue]{hyperref}
-% Noen av navnene for autoreferanser mangler på norsk, så vi ordner opp i det.
-%\addto\extrasnorsk{%
-%\def\figureautorefname{figur}%
-%\def\tableautorefname{tabell}%
-%\def\sectionautorefname{avsnitt}%
-%\def\subsectionautorefname{underavsnitt}%
-%}
-% Vi endrer fonten som brukes for URLer til den vanlige tekstfonten.
-\urlstyle{same}
-% legge til pdf-er
-\usepackage{pdfpages}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Selve dokumentet
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
+\pagenumbering{gobble}
 
-% I "front matter" angir vi formalia knyttet til dokumentet -- tittel, forfatter, tilknytning og sammendrag
-\begin{frontmatter}
+\title{Artificial Intelligence and Machine Learning for Nuclear Physics}
 
+\author{Andreas Isene$^*$}
+\author{Christian D. Nguyen$^*$}
+\author{Daniel Fremming$^*$}
 
-\title{FYS-STK4155 - Project 1}
-% I forfatterlisten legger vi inn "ikke-brytende" mellomrom etter initialene
-\author[CS:PH]{A.~Isene}
-\author[CS:IM]{C.D.~Nguyen}
-\author[ROBOTIKK]{D.~Fremming}
-
-\address[CS:PH]{UiO, Computational Science: Physics.}
-\address[CS:IM]{UiO, Computational Science: Imaging and Biomedical Computing.}
-\address[ROBOTIKK]{UiO, Robotics and Intelligent Systems.}
+% TODO: fill out the gaps
+% \affiliation{Department of Physics and Center for Computing in Science Education, University of Oslo, N-0316 Oslo, Norway}
+% \affiliation{Department of Physics and Center for Computing in Science Education, University of Oslo, N-0316 Oslo, Norway}
+% \affiliation{Department of Physics and Center for Computing in Science Education, University of Oslo, N-0316 Oslo, Norway}
 
 \begin{abstract}
-    This is the summary
+    Advances in artificial intelligence/machine learning methods provide tools that have broad applicability in scientific research.  These techniques are being applied across the diversity of nuclear physics research topics, leading to advances that will facilitate scientific discoveries and societal applications.
+    This review provides a snapshot of nuclear physics research  which has been transformed by  artificial intelligence and machine learning techniques.
 \end{abstract}
 
-\end{frontmatter}
+\maketitle
+\def\thefootnote{*}\footnotetext{These authors contributed equally to this work}\def\thefootnote{\arabic{footnote}}
+
+\tableofcontents
 
 \newpage
 
+\section{Introduction}
 
-\newpage
-\input{Project_1/sections/exercise1}
+This Review represents an up-to-date summary of  work in the application of artificial intelligence (AI) and machine learning (ML)
+in nuclear science, covering topics in nuclear theory, experimental methods, accelerator technology, and nuclear data.
+
+
+Nuclear physics is a well-established field, with more than a century of fundamental discoveries covering a huge span of degrees of freedom, energy scales and length scales, ranging from our basic understanding of  fundamental constituents of matter  to the structure of stars and the synthesis of the elements in the Cosmos. Experiments
+produce data volumes that range in complexity and heterogeneity, thereby posing enormous challenges to their
+ design,  their execution, and
+the statistical data analysis.
+
+ Theoretical modeling of nuclear properties is, in most physical cases
+ of interest, limited by the large amount of degrees of freedom in
+ quantum-mechanical calculations. The analysis of experimental data
+ and the theoretical modeling of nuclear systems aims, as is the case
+ in all fields of physics, at uncovering the basic laws of motion in
+ order to make predictions and estimations, as well as finding
+ correlations and causations for strongly interacting matter. The
+ broad aims of nuclear physics as a field correspond to a highly
+ distributed scientific enterprise. Experimental efforts utilize many
+ laboratories worldwide, each with unique operation, data acquisition,
+ and analysis methods. Similarly, the scales of focus spanned in
+ theoretical nuclear physics lead to broad needs for algorithmic
+ methods and uncertainty quantification. These efforts, utilizing
+ arrays of data types across size and energy scales, create a perfect
+ environment for applications of AI/ML methods.
+
+
+
+
+\section{Artificial Intelligence and Machine Learning for nuclear physics in broad strokes}
+
+
+ Statistics, data science, and AI/ML form important fields of research
+ in modern science. They describe how to learn and make predictions
+ from data, and enable the extraction of key information about
+ physical processes and the underlying scientific laws based on large
+ datasets. As such, recent advances in AI capabilities are being
+ applied to advance scientific discoveries in the physical sciences.
+
+
+
+
+Ideally, AI represents the science of building models to perform a
+task without being explicitly programmed. ML tasks fall under the
+broader AI umbrella. We will henceforth refer to the methods discussed
+as ``AI/ML''. The idea is that there exist generic algorithms which
+can be used to find patterns in a broad class of datasets without
+having to write code specifically for each problem. The algorithm
+builds its own logic based on the data. The attentive reader should
+however always keep in mind that machines and algorithms are to a
+large extent developed by humans. The choice of a specific AI/ML
+algorithm is governed by the insights and knowledge about a specific
+system.
+
+
+
+There exist many AI/ML approaches; they are often split into two main
+categories, supervised and unsupervised. In supervised learning, data
+are labeled and one lets a specific ML algorithm learn and deduce
+patterns in the datasets. This allows one to make predictions about
+future events and/or data not included in the training set.  On the
+other hand, unsupervised learning is a method for finding patterns and
+relationship in datasets without any prior knowledge of the
+system. Many researchers also operate with a third category, dubbed
+reinforcement learning. This is a paradigm of learning inspired by
+behavioral psychology, where actions are learned to maximize reward.
+One may encounter reinforcement learning being accompanied by
+supervised deep learning methods. Furthermore, what is often referred
+to as semi-supervised learning, entails developing algorithms that aim
+at learning from a dataset that includes both labeled and unlabeled
+data.
+
+
+Another way to categorize AI/ML tasks is to consider the desired output of a system. Some of the most common tasks are:
+\makeatletter
+\renewenvironment{description}%
+               {\list{}{\leftmargin=10pt % <------- Adjust this length
+                        \labelwidth\z@ \itemindent-\leftmargin
+                        \let\makelabel\descriptionlabel}}%
+               {\endlist}
+\makeatother
+
+\input{sections/exercise1}
 \hfill\break
-\input{Project_1/sections/exercise2}
+\input{sections/exercise2}
+
+\begin{description}
+    \item[Classification] Outputs are divided into two or more classes. The goal is to produce a model that assigns inputs into one of these classes. An example is to identify digits based on pictures of hand-written numbers.
+\item[Regression] Finding a functional relationship between an input dataset and a reference dataset. The goal is to construct a function that maps input data into continuous output values.
+\item[Clustering] Data are divided into groups with certain common traits, without knowing the different groups beforehand. This AI/ML task falls  under the category of unsupervised learning.
+\item[Generation] Building a model to generate data that are akin to a training dataset in both examples and distributions of examples. Most generative models are types of unsupervised learning.
+\end{description}
+In Table\,\ref{tab:acronyms} we list many of the methods encountered in this work, with their respective abbreviations.
+\begin{table*}[!htb]
+ \caption{Table of AI/ML with indication on the main type of learning (S: supervised,  U: unsupervised,  Semi-S: semi-supervised).
+ }
+    \label{tab:acronyms}
+\begin{ruledtabular}
+    \begin{tabular}{cll}
+    Acronym & Method & Type of Learning \\ \hline
+    AE & Autoencoders & U \\
+    ANN     & Artificial Neural Networks & S  \\
+  BED & Bayesian Experimental Design   & S \\
+        BM & Boltzmann Machines & U \\
+    BMA & Bayesian Model Averaging & S \\
+    BMM & Bayesian Model Mixing & Semi-S \\
+    BO & Bayesian Optimization & S \\
+    BNN & Bayesian Neural Networks & S \\
+%  CL & Clustering Methods & U \\ %MPK none found in text
+    CNN & Convolutional Neural Networks & S \\
+     EMB  & Ensemble Methods  and Boosting, including Decision Trees and Random Forests & S \\
+  %  FFNN & Feed Forward Neural Network & S \\  %MPK changed in text
+    GAN & Generative Adversarial Networks  & U \\
+    GP & Gaussian Processes  & Semi-S \\
+    KNN & $k$-nearest neighbors & U \\
+    KR & Kernel Regression & S \\
+    LR & Logistic Regression & S\\
+    LSTM & Long short-term memory & S\\
+%    MLP & Multilayer Perceptron & S\\ %MPK changed in text
+    PCA & Principal Component Analysis \& Dimensionality Reduction & U \\
+    REG    & Linear Regression  & S \\
+    RL & Reinforcement Learning & Neither S nor U \\
+    RNN & Recurrent Neural Networks & S \\
+    SVM & Support Vector Machines & S \\
+    VAE & Variational Auto Encoders & U
+     \end{tabular}
+ \end{ruledtabular}
+\end{table*}
 
 
+The methods we cover here have three central elements in common,
+irrespective of whether we deal with supervised, unsupervised, or
+semi-supervised learning. The first element is some dataset (which can
+be subdivided into training, validation, and test data), the second
+element is a model, which is normally a function of some parameters to
+be determined by the chosen optimization process. The model reflects
+our prior knowledge of the system (or lack thereof). As an example, if
+we know that our data show a behavior similar to what would be
+predicted by a polynomial, fitting the data to a polynomial of some
+degree would determine our model.  The last element is a so-called
+cost (or loss, error, penalty, or risk) function which allows us to
+present an estimate on how good our model is in reproducing the data
+it is supposed to train. This is the function which is optimized in
+order to obtain the best prediction for the data under study. The
+simplest cost function in a regression analysis (fitting a continuous
+function to the data) is the so-called mean squared error function
+while for a binary classification problem, the so-called cross entropy
+is widely used, see, e.g., \cite{Murphy2012,Bishop2006,Hastie2009} for
+more details. We will henceforth refer to this element as the
+assessment of a given method.
+
+
+
+Traditionally, the field of AI/ML has had its main focus on
+predictions and correlations.  In AI/ML and prediction-based tasks, we
+are often interested in developing algorithms that are capable of
+learning patterns from existing data in an automated fashion, and then
+using these learned patterns to make predictions or assessments of new
+data. In some cases, our primary concern is the quality of the
+predictions or assessments, with perhaps less focus on the underlying
+patterns (and probability distributions) that were learned in order to
+make these predictions.  However, in many nuclear physics studies, we
+are equally interested in being able to estimate errors and find
+causations.  In this Colloquium, we emphasize the role of predictions
+and correlations as well as error estimation and causations in
+statistical learning and ML.  For general references on these topics
+and discussions of frequentist and Bayesian methodologies, see, e.g.,
+\cite{Bishop2006, Goodfellow2016, Murphy2012, Hastie2009}.
+
+
+\bibliography{References} % add  references to this file
 \end{document}
