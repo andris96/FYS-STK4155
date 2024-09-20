@@ -1,0 +1,93 @@
+\section{Exercise 1: Expectation values for ordinary least squares expressions}
+Assumptions:
+\begin{enumerate}
+    \item $\varepsilon \text{ is independent from } x \text{ which gives: }\mathbb{E}[\varepsilon]=0)$
+    \item $y=f(x) + \varepsilon$ \text{. Here we will simplify f=f(x)}.
+    \item $f(x) \text{ is a fixed, deterministic function of } x \text{, hence }\\ \mathbb{E}[f(x)]=f(x)$
+\end{enumerate}
+\hfill\break
+\subsection{The mean-square error of our model can be written:}
+%
+%_____________________________________
+%
+\begin{align*}
+    & \text{MSE} = \mathbb{E}[(y-\Tilde{y})^2]\\
+    & = \mathbb{E}[y^2-2y\Tilde{y}+\Tilde{y}^2]\\
+    & = \mathbb{E}[y^2]-2\mathbb{E}[y\Tilde{y}]+\mathbb{E}[\Tilde{y}^2]\\
+\end{align*}
+%
+We look into each term:
+\begin{equation}
+\mathbb{E}[y^2]
+\end{equation}
+\begin{equation}
+    \mathbb{E}[y\Tilde{y}]
+\end{equation}
+\begin{equation}
+    \mathbb{E}[\Tilde{y}^2]
+\end{equation}
+%
+%Term 1 ____________
+From (1) we have:
+ \begin{align*}
+     & \mathbb{E}[y^2]=\mathbb{E}[(f+\varepsilon)^2]=\mathbb{E}[f^2+2f\varepsilon+\epsilon^2]\\
+     & = \mathbb{E}[f^2]+\mathbb{E}[\varepsilon^2]\\
+     & =  \mathbb{E}[f^2]+\sigma^2 = f^2+\sigma^2
+ \end{align*}
+%Term 2 _________________
+From (2):
+\begin{align*}
+    & \mathbb{E}[y\Tilde{y}]=\mathbb{E}[y]\mathbb{E}[\Tilde{y}]
+     = \mathbb{E}[f+\varepsilon]\mathbb{E}[\Tilde{y}]\\
+    & =\mathbb{E}[f]\mathbb{E}[\Tilde{y}]=f\mathbb{E}[\Tilde{y}]
+\end{align*}
+%Term 3 _________________
+We have:
+\begin{align*}
+    & Var[\Tilde{y}]=\mathbb{E}[(\Tilde{y}]-\mathbb{E}[\Tilde{y}])^2]\\
+    & = \mathbb{E}[\Tilde{y}^2-2\Tilde{y}\mathbb{E}[\Tilde{y}]+(\mathbb{E}[\Tilde{y}])^2]\\
+    & = \mathbb{E}[\Tilde{y}^2]-2\mathbb{E}[\Tilde{y}]\mathbb{E}[\Tilde{y}]+(\mathbb{E}[\Tilde{y}])^2\\
+    & = \mathbb{E}[\Tilde{y}^2]-(\mathbb{E}[\Tilde{y}])^2\\
+    & \implies \mathbb{E}[\Tilde{y}^2]= Var[\Tilde{y}]+(\mathbb{E}[\Tilde{y}])^2
+\end{align*}
+%
+Put the terms together:
+\begin{align*}
+    & \mathbb{E}[y^2]-2\mathbb{E}[y\Tilde{y}]+\mathbb{E}[\Tilde{y}^2]\\
+    & = f^2+\sigma^2-2f\mathbb{E}[\Tilde{y}]+(Var(\Tilde{y})+(\mathbb{E}[\Tilde{y}])^2)\\
+    & = f^2-2f\mathbb{E}[\Tilde{y}]+(\mathbb{E}[\Tilde{y}])^2+Var(\Tilde{y})+\sigma^2\\
+    & \implies \mathbb{E}[(f-\mathbb{E}[\Tilde{y}])^2]+Var(\Tilde{y})+\sigma^2
+\end{align*}
+
+First term in above expression can be approximated:
+\begin{equation}
+    \mathbb{E}[(f-\mathbb{E}[\Tilde{y}])^2] \simeq \frac{1}{n}\sum_{i}(y_i-\mathbb{E}[\Tilde{y}])^2 \text{ ,where } f_i\simeq y_i
+\end{equation}
+
+From (4) we have that MSE can be written:
+\begin{equation}
+    \mathbb{E}[(f-\mathbb{E}[\Tilde{y}])^2] \simeq \frac{1}{n}\sum_{i}(y_i-\mathbb{E}[\Tilde{y}])^2 = Bias[\Tilde{y}]
+\end{equation}
+
+Similarly, the variance can be expressed as:
+\begin{align*}
+    \mathbb{E}[(\Tilde{y}-\mathbb{E}[\Tilde{y}])^2]\simeq\frac{1}{n}\sum_{i}(\Tilde{y_i}-\mathbb{E}[\Tilde{y}])^2 = Var[\Tilde{y}]
+\end{align*}
+%___________________________________________
+Setting in both the bias and variance terms into the equation we then obtain:
+
+$MSE=Bias(\Tilde{y})+Var(\Tilde{y})+\sigma^2$
+
+\subsection{Discussing the terms}
+\hfill\break
+The bias term represents the error caused by in-built assumptions in our used method. It consists of the average prediction over all data sets subtracted with the desired regression function.
+The variance term describes the difference between solutions for the data sets and their average(variance of the model arounds its mean) \cite{bishop_2006_pattern}.
+
+As for the sigma term, it represents the variance of the error, i.e. the noise of our method, where this quantity is expected to be irreducible. Since the sigma term is irreducible we will omit its interpretation in this section. The equation of minimum squared error(MSE) can be regarded as the expected loss when using our regression model, where we desire to minimize the error. This minimization can be dubbed the bias-variance trade-off, since it is about striking a balance between the bias and variance term. As for interpreting the terms(bias and variance), we will look into 2 scenarios as to how model complexity affects their behaviour.
+Let $\Tilde{y}$ denote our model. The more complex it is, the better it is to go through the data points, hence we will acquire a lower bias. Respectively, the variance will be higher because the a higher model complexity makes the model "move" through more data points and it learns the noise of the training data. This flexibility in the model will lead run into the problem of overfitting our model, it works well on the training data we input, but it will run into problems once given new data it has never "seen", i.e. overfitting makes the model less able to generalize.
+
+If the model $\title{y}$ is too rigid, it will output a high bias and low variance, and the model is not sufficient to fit the data points - we say it will underfit. Similarly to the case with a  complex model, it will result in a poor generalization.
+
+
+
+
