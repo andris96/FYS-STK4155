@@ -24,7 +24,7 @@
 \usepackage{hyperref}
 \hypersetup{breaklinks=true,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=magenta,urlcolor=blue}
 
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
 %\newcommand{\contrib}[1]{\textcolor{red}{#1}}
 %\newcommand{\comment}[1]{\textcolor{blue}{#1}}
 %\newcommand{\WN}[1]{{\color{red} #1}}
@@ -50,10 +50,11 @@ apsrev41Control%
 %\linenumbers
 
 
+
 \begin{document}
 \pagenumbering{gobble}
 
-\title{Artificial Intelligence and Machine Learning for Nuclear Physics}
+\title{Regression Analysis and Resampling Methods}
 
 \author{Andreas Isene$^*$}
 \author{Christian D. Nguyen$^*$}
@@ -73,8 +74,6 @@ apsrev41Control%
 \def\thefootnote{*}\footnotetext{These authors contributed equally to this work}\def\thefootnote{\arabic{footnote}}
 
 \tableofcontents
-
-\newpage
 
 \section{Introduction}
 
@@ -159,9 +158,6 @@ Another way to categorize AI/ML tasks is to consider the desired output of a sys
                {\endlist}
 \makeatother
 
-\input{sections/exercise1}
-\hfill\break
-\input{sections/exercise2}
 
 \begin{description}
     \item[Classification] Outputs are divided into two or more classes. The goal is to produce a model that assigns inputs into one of these classes. An example is to identify digits based on pictures of hand-written numbers.
@@ -246,6 +242,11 @@ statistical learning and ML.  For general references on these topics
 and discussions of frequentist and Bayesian methodologies, see, e.g.,
 \cite{Bishop2006, Goodfellow2016, Murphy2012, Hastie2009}.
 
+\newpage
+
+\input{sections/exercise1}
+\hfill\break
+\input{sections/exercise2}
 
 \bibliography{References} % add  references to this file
 \end{document}
