@@ -1,4 +1,4 @@
-
+% HEADS UP: GIT IS NOT UP TO DATE
 
 \documentclass[aps,rmp,reprint,amsmath,amssymb,graphicx,longbibliography]{revtex4-1}
 
@@ -11,6 +11,7 @@
 \usepackage[para,online,flushleft]{threeparttablex}
 \usepackage{booktabs,dcolumn}
 \usepackage{color}
+\usepackage{comment}
 
 
 \usepackage{textpos}
@@ -60,34 +61,50 @@ apsrev41Control%
 \author{Christian D. Nguyen$^*$}
 \author{Daniel Fremming$^*$}
 
-% TODO: fill out the gaps
+% TODO: Change and apply affiliation
 % \affiliation{Department of Physics and Center for Computing in Science Education, University of Oslo, N-0316 Oslo, Norway}
 % \affiliation{Department of Physics and Center for Computing in Science Education, University of Oslo, N-0316 Oslo, Norway}
 % \affiliation{Department of Physics and Center for Computing in Science Education, University of Oslo, N-0316 Oslo, Norway}
 
+
+% The abstract gives the reader a quick overview of what has been done and the most important results.
 \begin{abstract}
-    Advances in artificial intelligence/machine learning methods provide tools that have broad applicability in scientific research.  These techniques are being applied across the diversity of nuclear physics research topics, leading to advances that will facilitate scientific discoveries and societal applications.
-    This review provides a snapshot of nuclear physics research  which has been transformed by  artificial intelligence and machine learning techniques.
+     In this paper we use regression methods such as OLS, ridge and lasso regression to fit the two-dimentional franke's function. We explore bias-variance trade-off and compare bootstrapping with cross-validation to improve our model. The model is then applied to real terrain data.
 \end{abstract}
 
 \maketitle
 \def\thefootnote{*}\footnotetext{These authors contributed equally to this work}\def\thefootnote{\arabic{footnote}}
+\def\thefootnote{$^1$}\footnotetext{For full excerpt of conversion with chatGPT, see github material}
 
 \tableofcontents
 
+
+%Introduction should contain:
+
+%Motivate the reader, the first part of the introduction gives always a motivation and tries to give the overarching ideas
+
+%What I have done
+
+%The structure of the report, how it is organized etc
+
+%TODO: summary of work, structure of report
 \section{Introduction}
+Regression analysis is a central tool in science as a whole. It can be utilized to make predictions based on multiple independent variables. As an example one could predict house prices based on location, size, number of rooms, etc. There are various different methods that has been developed, each with unique strengths and weaknesses. As such we have been motivated to explore specifically \textit{ordinary least squares}, \textit{ridge regression}, and \textit{lasso regression}. These methods have been applied to fit models on real topographic data. They were then be evaluated and improved through resampling techniques. 
 
-This is our introduction
-potato potato
-\section{Artificial Intelligence and Machine Learning for nuclear physics in broad strokes}
+This is some simple reference \cite{Goodfellow2016}.
+This is another elaborate reference \cite{Hastie,raschka2022}
+In conversation with GPT we established that it liked ice cream $^1$.
 
-
- Statistics, data science, and AI/ML form important fields of research
- in modern science. They describe how to learn and make predictions
- from data, and enable the extraction of key information about
- physical processes and the underlying scientific laws based on large
- datasets. As such, recent advances in AI capabilities are being
- applied to advance scientific discoveries in the physical sciences.
+\begin{comment}
+    \section{Template: Artificial Intelligence and Machine Learning for nuclear physics in broad strokes}
+    
+    
+     Statistics, data science, and AI/ML form important fields of research
+     in modern science. They describe how to learn and make predictions
+     from data, and enable the extraction of key information about
+     physical processes and the underlying scientific laws based on large
+     datasets. As such, recent advances in AI capabilities are being
+     applied to advance scientific discoveries in the physical sciences.
 
 
 
@@ -194,7 +211,7 @@ order to obtain the best prediction for the data under study. The
 simplest cost function in a regression analysis (fitting a continuous
 function to the data) is the so-called mean squared error function
 while for a binary classification problem, the so-called cross entropy
-is widely used, see, e.g., \cite{Murphy2012,Bishop2006,Hastie2009} for
+is widely used, see, e.g., \cite{Hastie, Goodfellow2016} for
 more details. We will henceforth refer to this element as the
 assessment of a given method.
 
@@ -214,13 +231,19 @@ causations.  In this Colloquium, we emphasize the role of predictions
 and correlations as well as error estimation and causations in
 statistical learning and ML.  For general references on these topics
 and discussions of frequentist and Bayesian methodologies, see, e.g.,
-\cite{Bishop2006, Goodfellow2016, Murphy2012, Hastie2009}.
+\cite{goodfellow2016}.
 
 \newpage
 
-\input{sections/exercise1}
-\hfill\break
-\input{sections/exercise2}
+%\input{sections/exercise1}
+%\hfill\break
+%\input{sections/exercise2}
 
+% Guidelines for references:
+%Give always references to material you base your work on, either scientific articles/reports or books.
+%Refer to articles as: name(s) of author(s), journal, volume (boldfaced), page and year in parenthesis.
+%Refer to books as: name(s) of author(s), title of book, publisher, place and year, eventual page numbers
+\end{comment}
+\bibliographystyle{plain}
 \bibliography{References} % add  references to this file
 \end{document}
