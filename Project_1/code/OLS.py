@@ -1,7 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import r2_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
@@ -12,6 +10,14 @@ from sklearn.model_selection import train_test_split
 noise = 0.1
 x = np.linspace(0,1,100)
 y = 2.0+5*x*x+noise*np.random.randn(100)
+
+# Error computation
+def R2(y_data,y_model):
+    return 1 - np.sum ((y_data - y_model)**2)/np.sum((y_data - np.mean(y_data))** 2)
+
+def MSE(y_data ,y_model):
+    n = np.size(y_model)
+    return np.sum((y_data - y_model)**2)/n
 
 # For testing, the design matrix can be set to the identity matrix
 # By doing this we ensure that the MSE should evaluate to 0
@@ -26,7 +32,7 @@ U, S, Vh = np.linalg.svd(X)
 ytilde_OLS = (U @ U.T) @ y
 
 # Evaluating mean squared error (MSE)
-MSE_test = mean_squared_error(y,ytilde_OLS)
+MSE_test = MSE(y,ytilde_OLS)
 
 # Testing MSE
 assert (MSE_test == 0.0), "MSE test failed"
@@ -44,13 +50,6 @@ def design_matrix(x, degree):
     return X
 
 
-# Error computation
-def R2(y_data,y_model):
-    return 1 - np.sum ((y_data - y_model)**2)/np.sum((y_data - np.mean(y_data))** 2)
-
-def MSE(y_data ,y_model):
-    n = np.size(y_model)
-    return np.sum((y_data - y_model)**2)/n
 
 # Creating lists to contain MSE and R2 values
 MSE_list = []
@@ -80,7 +79,7 @@ for i in degrees:
     # Finding the pseudo-inverse of S
     S_inv = np.linalg.pinv(np.diag(S))
 
-    #print(S_inv)
+    print(S_inv)
 
     # Calculating the beta values
     beta = Vh @ S_inv @ U.T @ y_train_scaled
