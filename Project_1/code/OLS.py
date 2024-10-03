@@ -8,16 +8,19 @@ from sklearn.model_selection import train_test_split
 
 # Generating data to work with
 noise = 0.1
-x = np.linspace(0,1,100)
-y = 2.0+5*x*x+noise*np.random.randn(100)
+x = np.linspace(0, 1, 100)
+y = 2.0 + 5 * x * x + noise * np.random.randn(100)
+
 
 # Error computation
-def R2(y_data,y_model):
-    return 1 - np.sum ((y_data - y_model)**2)/np.sum((y_data - np.mean(y_data))** 2)
+def R2(y_data, y_model):
+    return 1 - np.sum((y_data - y_model) ** 2) / np.sum((y_data - np.mean(y_data)) ** 2)
 
-def MSE(y_data ,y_model):
+
+def MSE(y_data, y_model):
     n = np.size(y_model)
-    return np.sum((y_data - y_model)**2)/n
+    return np.sum((y_data - y_model) ** 2) / n
+
 
 # For testing, the design matrix can be set to the identity matrix
 # By doing this we ensure that the MSE should evaluate to 0
@@ -32,10 +35,10 @@ U, S, Vh = np.linalg.svd(X)
 ytilde_OLS = (U @ U.T) @ y
 
 # Evaluating mean squared error (MSE)
-MSE_test = MSE(y,ytilde_OLS)
+MSE_test = MSE(y, ytilde_OLS)
 
 # Testing MSE
-assert (MSE_test == 0.0), "MSE test failed"
+assert MSE_test == 0.0, "MSE test failed"
 
 """
  We will now work with polynomial fitting, and compare the regression analysis
@@ -43,13 +46,28 @@ assert (MSE_test == 0.0), "MSE test failed"
  We do this by having a function which takes x and the degree of our polynomial as input,
  and returns the design matrix as output.
 """
+
+
 def design_matrix(x, degree):
-    X = np.zeros((len(x), degree+1))
-    for p in range(degree):
-        X[:,p] = x**(p+1)
+    X = np.zeros((len(x), degree + 1))
+    # X[:, 0] = 1.0
+    for p in range(0, degree + 1):
+        X[:, p] = x ** (p)
     return X
 
 
+"""___________________________________________
+from IPython.display import display
+import pandas as pd
+
+
+B = design_matrix(x, 2)
+print(B)
+
+designmatrix = pd.DataFrame(B)  # useful for formatted matrix representation
+# designmatrix.columns = ["interecept", "x^1", "x^2"]
+display(designmatrix)
+_____________________________TROUBLESHOOTING design matrix"""
 
 # Creating lists to contain MSE and R2 values
 MSE_list = []
@@ -59,14 +77,15 @@ degrees = np.arange(1, 6)
 
 # Evaluating MSE and R2 for different design matrices
 for i in degrees:
-    X = design_matrix(x,i)
-    # Splitting and scaling data
-    [X_train, X_test, y_train, y_test] = train_test_split(X, y, test_size=0.2)
+    X = design_matrix(x, i)
 
+    # Splitting
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+    # Scaling data - relative scaling
     X_train_mean = np.mean(X_train, axis=0)
-
-    X_train_scaled =  X_train - X_train_mean
-    X_test_scaled =  X_test - X_train_mean
+    X_train_scaled = X_train - X_train_mean
+    X_test_scaled = X_test - X_train_mean
 
     y_scaler = np.mean(y_train)
     y_train_scaled = y_train - y_scaler
@@ -74,7 +93,7 @@ for i in degrees:
     # SVD decomposition, full_matrices=false ensures that we only focus on non-zero singular values
     U, S, Vh = np.linalg.svd(X_train_scaled, full_matrices=False)
 
-    #print(S)
+    # print(S)
 
     # Finding the pseudo-inverse of S
     S_inv = np.linalg.pinv(np.diag(S))
@@ -92,22 +111,20 @@ for i in degrees:
     MSE_list.append(MSE(y_train_scaled, ytilde_OLS_train))
     R2_list.append(R2(y_train_scaled, ytilde_OLS_train))
 
-beta_values = beta_values[1:] # Deleting first element which is empty
+beta_values = beta_values[1:]  # Deleting first element which is empty
 
 print(MSE_list)
 print(R2_list)
-"""
+
 plt.plot(degrees, MSE_list, label="MSE")
 plt.legend()
 plt.show()
 plt.plot(degrees, R2_list, label="R2")
 plt.legend()
 plt.show()
-"""
 
 
 # Plotting beta values for each polynomial
-#for i in range(1, len(beta_values)):
+# for i in range(1, len(beta_values)):
 #   plt.plot(np.arange(1,i+1), beta_values[i])
-#plt.show()
-
+# plt.show()
