@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 
 
 # Ordinary least squared method
@@ -36,51 +38,77 @@ assert (MSE_test == 0.0), "MSE test failed"
  and returns the design matrix as output.
 """
 def design_matrix(x, degree):
-    X = np.zeros((len(x), degree))
+    X = np.zeros((len(x), degree+1))
     for p in range(degree):
-        X[:,p] = x**p
+        X[:,p] = x**(p+1)
     return X
 
+
+# Error computation
+def R2(y_data,y_model):
+    return 1 - np.sum ((y_data - y_model)**2)/np.sum((y_data - np.mean(y_data))** 2)
+
+def MSE(y_data ,y_model):
+    n = np.size(y_model)
+    return np.sum((y_data - y_model)**2)/n
+
 # Creating lists to contain MSE and R2 values
-MSE = []
-R2 = []
+MSE_list = []
+R2_list = []
 beta_values = []
-degrees = np.linspace(1, 6, 7, dtype = int)
+degrees = np.arange(1, 6)
+
 # Evaluating MSE and R2 for different design matrices
 for i in degrees:
     X = design_matrix(x,i)
+    # Splitting and scaling data
+    [X_train, X_test, y_train, y_test] = train_test_split(X, y, test_size=0.2)
+
+    X_train_mean = np.mean(X_train, axis=0)
+
+    X_train_scaled =  X_train - X_train_mean
+    X_test_scaled =  X_test - X_train_mean
+
+    y_scaler = np.mean(y_train)
+    y_train_scaled = y_train - y_scaler
+
     # SVD decomposition, full_matrices=false ensures that we only focus on non-zero singular values
-    U, S, Vh = np.linalg.svd(X, full_matrices=False)
-    ytilde_OLS = (U @ U.T) @ y
+    U, S, Vh = np.linalg.svd(X_train_scaled, full_matrices=False)
+
+    #print(S)
 
     # Finding the pseudo-inverse of S
-    S_inv = np.diag(1 / S)
+    S_inv = np.linalg.pinv(np.diag(S))
+
+    #print(S_inv)
 
     # Calculating the beta values
-    beta = Vh @ S_inv @ U.T @ y
+    beta = Vh @ S_inv @ U.T @ y_train_scaled
     beta_values.append(beta)
 
+    ytilde_OLS_train = X_train_scaled @ beta + y_scaler
+    ytilde_OLS_test = X_test_scaled @ beta + y_scaler
+
     # Evaluating mean squared error (MSE) and R2
-    MSE.append(mean_squared_error(y, ytilde_OLS))
-    R2.append(r2_score(y, ytilde_OLS))
+    MSE_list.append(MSE(y_train_scaled, ytilde_OLS_train))
+    R2_list.append(R2(y_train_scaled, ytilde_OLS_train))
 
-print(MSE)
-plt.plot(degrees, MSE, label="MSE")
+beta_values = beta_values[1:] # Deleting first element which is empty
+
+print(MSE_list)
+print(R2_list)
+"""
+plt.plot(degrees, MSE_list, label="MSE")
 plt.legend()
 plt.show()
-plt.plot(degrees, R2, label="R2")
+plt.plot(degrees, R2_list, label="R2")
 plt.legend()
 plt.show()
-
-# Plotting beta values for 4th degree, need to plott for all polynomials
-for i in range(1, len(degrees)):
-    plt.plot(np.arange(0,i,1), beta_values[i])
-plt.show()
+"""
 
 
-
-# To visualize the regression, uncomment the lines below:
-# plt.plot(x,y)
-# plt.plot(x, X @ beta, '-')
-# plt.show()
+# Plotting beta values for each polynomial
+#for i in range(1, len(beta_values)):
+#   plt.plot(np.arange(1,i+1), beta_values[i])
+#plt.show()
 
