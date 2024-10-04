@@ -75,7 +75,7 @@ def scale_data(X):
 order = 5
 np.random.seed()
 n = 100
-method = "SVD"
+method = "OLS"
 
 # Make data set.
 x = np.linspace(-3, 3, n).reshape(-1, 1)
