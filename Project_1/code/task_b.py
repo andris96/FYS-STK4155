@@ -2,7 +2,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-from sklearn.model_selection import train_test_split
 
 def MSE(y, y_pred):
     return np.mean((y - y_pred)**2)
@@ -22,7 +21,7 @@ def OLS(X, y):
 
 def SVD(X, y):
     U, s, VT = np.linalg.svd(X, full_matrices=False)
-    beta = VT.T @ np.linalg.pinv(np.diag(s)) @ U.T @ y
+    beta = VT.T @ np.linalg.inv(np.diag(s)) @ U.T @ y
     return beta
 
 def plot_beta(beta_buffer):
@@ -54,24 +53,17 @@ def plot_R2(R2_buffer):
     plt.show()
 
 def scale_data(X):
-    mean = np.mean(X, axis=0)
-    std = np.std(X, axis=0)
+    X_scaled = (X - np.mean(X))
+    return X_scaled
 
-    # Avoid division by zero
-    std[std == 0] = 1
-
-    # Scale the data
-    scaled_data = (X - mean) / std
-    return scaled_data, mean, std
-
-order = 10
+order = 5
 np.random.seed()
 n = 100
-method = "SVD"
+method = "OLS"
 
 # Make data set.
 x = np.linspace(-3, 3, n).reshape(-1, 1)
-y = np.exp(-x**2) + 1.5 * np.exp(-(x-2)**2) + np.random.normal(0, 1, x.shape)
+y = np.exp(-x**2) + 1.5 * np.exp(-(x-2)**2) + np.random.normal(0, 0.1, x.shape)
 # Buffer for storing results.
 beta_buffer = np.zeros((order + 1, order+1))
 MSE_buffer = np.zeros((order + 1))
@@ -80,20 +72,11 @@ R2_buffer = np.zeros((order + 1))
 for o in range(order+1):
     X = create_design_matrix(x, o)
     (X_train, X_test, y_train, y_test) = train_test_split(X, y, test_size=0.2)
-
-    X_train_scaled, X_train_mean, X_train_std = scale_data(X_train)
-    X_test = (X_test - X_train_mean) / X_train_std
-
-    y_train_scaled, y_train_mean, y_train_std = scale_data(y_train)
-
-
     if method == "OLS":
-        beta = OLS(X_train_scaled, y_train_scaled)
+        beta = OLS(X_train, y_train)
     elif method == "SVD":
-        beta = SVD(X_train_scaled, y_train_scaled)
-
-    y_pred = (X_test @ beta) * y_train_std + y_train_mean
-
+        beta = SVD(X_train, y_train)
+    y_pred = X_test @ beta
     if o == order+1:
         beta_buffer[o] = beta[:,0]
     else:
