@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Lasso
 
 def MSE(y, y_pred):
     n = np.size(y_pred)
@@ -92,7 +93,7 @@ def scale_data(X):
     X_scaled[:, 1:] = (X[:, 1:] - mean) / std
     return X_scaled, mean, std
 
-order = 15
+order = 5
 lambdas =[0.0001, 0.001, 0.01, 0.1, 1.0]
 np.random.seed()
 n = 100
@@ -100,11 +101,12 @@ method = "SVD"
 
 # Make data set.
 x = np.linspace(-3, 3, n).reshape(-1, 1)
-y = np.exp(-x**2) + 1.5 * np.exp(-(x-2)**2) + np.random.normal(0, 0.1, x.shape)
+y = np.exp(-x**2) + 1.5 * np.exp(-(x-2)**2) + np.random.normal(0, 0.2, x.shape)
 # Buffer for storing results.
 beta_buffer = np.zeros((order + 1, order+1))
 MSE_buffer = np.zeros((order + 1))
 MSE_buffer_ridge = np.zeros((order + 1))
+MSE_buffer_lasso = np.zeros((order + 1))
 R2_buffer = np.zeros((order + 1))
 # Loop over polynomial orders.
 for o in range(order+1):
@@ -124,15 +126,21 @@ for o in range(order+1):
     elif method == "SVD":
         beta = SVD(X_train_scaled, y_train)
 
-    beta_ridge_svd = compute_beta_ridge_svd(X_train_scaled, y_train, lambdas[4])
+    beta_ridge_svd = compute_beta_ridge_svd(X_train_scaled, y_train, lambdas[2])
 
+    # Lasso
+    RegLasso = Lasso(alpha=lambdas[2], fit_intercept=False)
+    RegLasso.fit(X_train_scaled, y_train)
+    y_pred_lasso = (X_test_scaled @ np.vstack(RegLasso.coef_))
+    # Ridge
     y_pred_ridge = (X_test_scaled @ beta_ridge_svd)
+    # OLS
     y_pred = (X_test_scaled @ beta)
-
 
     beta_buffer[o, :o+1] = beta[:,0]
     MSE_buffer[o] = MSE(y_test, y_pred)
     MSE_buffer_ridge[o] = MSE(y_test, y_pred_ridge)
+    MSE_buffer_lasso[o] = MSE(y_test, y_pred_lasso)
     R2_buffer[o] = R2(y_test, y_pred)
 
 
