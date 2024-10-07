@@ -175,7 +175,7 @@ data = "2D"
 # Make data set with either 1D function or 2D function
 if data == "1D":
     x = np.linspace(-3, 3, n).reshape(-1, 1)
-    y = np.exp(-x**2) + 1.5 * np.exp(-(x-2)**2) + np.random.normal(0, 0.2, x.shape)
+    y = np.exp(-x**2) + 1.5 * np.exp(-(x-2)**2) + np.random.normal(0, 0.1, x.shape)
 
 elif data == "2D":
     x = np.arange(0, 1, 0.05)

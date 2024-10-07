@@ -131,9 +131,9 @@ def FrankeFunction(x,y):
 #%%
 
 order = 5
-lambdas =[0.0001, 0.001, 0.01, 0.1, 1.0]
+lambdas =[0.001, 0.01, 0.1, 1.0]
 np.random.seed()
-n = 100
+n = 500
 # Adjust the method and data to test different methods and data sets
 method = "SVD"
 data = "2D"
@@ -167,8 +167,8 @@ elif data == "2D":
 MSE_buffer_test = np.zeros((order + 1))
 MSE_buffer_train = np.zeros((order + 1))
 
-MSE_buffer_ridge = np.zeros((order + 1))
-MSE_buffer_lasso = np.zeros((order + 1))
+MSE_buffer_ridge = np.zeros(((order + 1), len(lambdas)))
+MSE_buffer_lasso = np.zeros(((order + 1), len(lambdas)))
 R2_buffer = np.zeros((order + 1))
 
 # Loop over polynomial orders.
@@ -189,43 +189,45 @@ for o in range(order+1):
     X_test_scaled[:, 1:] = (X_test[:, 1:] - X_train_mean) / X_train_std
 
 
-    # Target variable y is generally unecessary to scale for regression methods
-
     if method == "OLS":
         beta = OLS(X_train_scaled, y_train)
     elif method == "SVD":
         beta = SVD(X_train_scaled, y_train)
 
-
-    beta_ridge_svd = compute_beta_ridge_svd(X_train_scaled, y_train, lambdas[2])
-
-    # Lasso
-    RegLasso = Lasso(alpha=lambdas[2], fit_intercept=False)
-    RegLasso.fit(X_train_scaled, y_train)
-    y_pred_lasso = (X_test_scaled @ np.vstack(RegLasso.coef_))
-
-    # Ridge
-    y_pred_ridge = (X_test_scaled @ beta_ridge_svd)
-
-    # OLS
-    y_pred = (X_test_scaled @ beta)
-    y_pred_train = (X_train_scaled @ beta)
-
+    # Store the beta coefficients, depending on the data
     if data == "1D":
         beta_buffer[o, :o+1] = beta[:,0]
-
     elif data == "2D":
         num_coeff = int((o + 1)*(o + 2)/2)
         beta_buffer[o, :num_coeff] = beta
 
 
+    # OLS
+    y_pred = (X_test_scaled @ beta)
+    y_pred_train = (X_train_scaled @ beta)
 
-
+    # Store the results
     MSE_buffer_test[o] = MSE(y_test, y_pred)
     MSE_buffer_train[o] = MSE(y_train, y_pred_train)
-    MSE_buffer_ridge[o] = MSE(y_test, y_pred_ridge)
-    MSE_buffer_lasso[o] = MSE(y_test, y_pred_lasso)
     R2_buffer[o] = R2(y_test, y_pred)
+
+    # Loop over lambdas for Ridge and Lasso
+    for i in range(len(lambdas)):
+        # Ridge
+        beta_ridge_svd = compute_beta_ridge_svd(X_train_scaled, y_train, lambdas[i])
+        y_pred_ridge = (X_test_scaled @ beta_ridge_svd)
+
+        # Lasso
+        RegLasso = Lasso(alpha=lambdas[i], fit_intercept=False, max_iter=10000)
+        RegLasso.fit(X_train_scaled, y_train)
+        y_pred_lasso = (X_test_scaled @ np.vstack(RegLasso.coef_))
+
+        # Store the results
+        MSE_buffer_ridge[o, i] = MSE(y_test, y_pred_ridge)
+        MSE_buffer_lasso[o, i] = MSE(y_test, y_pred_lasso)
+
+
+
 
 
 
