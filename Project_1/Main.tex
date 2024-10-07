@@ -1,4 +1,4 @@
-% HEADS UP: GIT IS NOT UP TO DATE
+
 
 \documentclass[aps,rmp,reprint,amsmath,amssymb,graphicx,longbibliography]{revtex4-1}
 
@@ -24,7 +24,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 \hypersetup{breaklinks=true,colorlinks=true,linkcolor=blue,citecolor=blue,filecolor=magenta,urlcolor=blue}
-
+\renewcommand\thesubsection{\thesection.\arabic{subsection}}
+\renewcommand\thesection{\arabic{section}}
 \usepackage[table]{xcolor}
 %\newcommand{\contrib}[1]{\textcolor{red}{#1}}
 %\newcommand{\comment}[1]{\textcolor{blue}{#1}}
@@ -55,7 +56,7 @@ apsrev41Control%
 \begin{document}
 \pagenumbering{gobble}
 
-\title{Regression Analysis and Resampling Methods}
+\title{ Applying Regression and Resampling Techniques on Franke Function and Real Terrain Data }
 
 \author{Andreas Isene$^*$}
 \author{Christian D. Nguyen$^*$}
@@ -68,8 +69,28 @@ apsrev41Control%
 
 
 % The abstract gives the reader a quick overview of what has been done and the most important results.
+
+
+\begin{comment}
+The abstract gives the reader a quick overview of what has been done and the most important results. Try to be to the point and state your main findings. It could be structured as follows
+
+    Short introduction to topic and why its important
+    Introduce a challenge or unresolved issue with the topic (that you will try to solve)
+    What have you done to solve this
+    Main Results
+    The implications
+\end{comment}
+
 \begin{abstract}
-     In this paper we use regression methods such as OLS, ridge and lasso regression to fit the two-dimentional franke's function. We explore bias-variance trade-off and compare bootstrapping with cross-validation to improve our model. The model is then applied to real terrain data.
+
+
+     
+     The field of Machine Learning (ML) stands central when it comes to gathering, processing, evaluating and drawing conclusions from data. 
+     Scientists from this field often work with large data sets, which are then filtered to draw out meaningful information which can have various forms of applications, such as predicting the results of a political election or weather forecast. These prediction models, or more befitting, linear regressions, come with implications when generalizing to a data set. They can be difficult to use and tuning their parameters can be troublesome to tune. The model can either be too simple to describe the complexity or too specialized - either way, it fails as a means of predicting unseen data.
+     
+     In this paper we introduce 3 regression methods for the reader, them being the ordinary least squares(OLS), Ridge- and Lasso-regression methods. Before applying the regression models on real world terrain data, we fine-tune them by trying to fit them to the 2D Franke's function, and once more by applying 2 resampling techniques, i.e. kFold cross-validation and bootstrapping. In the latter, we will take a look into the bias-variance trade-off which is key in fine-tuning our model.
+     \textbf{Fifth: your results - what was your best model and with what MSE/R2. Sixth: implications: is the best model a good model, i.e. can it solve your problem? In other wordst your abstract is missing the start and the end... }
+     
 \end{abstract}
 
 \maketitle
@@ -88,12 +109,53 @@ apsrev41Control%
 %The structure of the report, how it is organized etc
 
 %TODO: summary of work, structure of report
+
+\begin{comment}
+    The report, the introduction
+
+When you write the introduction you could focus on the following aspects
+
+    Motivate the reader, the first part of the introduction gives always a motivation and tries to give the overarching ideas
+    What I have done
+    The structure of the report, how it is organized etc
+
+\end{comment}
+
 \section{Introduction}
-Regression analysis is a central tool in science as a whole. It can be utilized to make predictions based on multiple independent variables. As an example one could predict house prices based on location, size, number of rooms, etc. There are various different methods that has been developed, each with unique strengths and weaknesses. As such we have been motivated to explore specifically \textit{ordinary least squares}, \textit{ridge regression}, and \textit{lasso regression}. These methods have been applied to fit models on real topographic data. They were then be evaluated and improved through resampling techniques.
+
+    Never before have the world generated as much volume of data as of today. In the current stage of the Information Age data dictates the way we live as it can help us foresee and predict patterns, nonetheless, also enable us to see the bigger picture.
+
+
+    
+Regression analysis is a central tool in science as a whole. It can be utilized to make predictions based on multiple independent variables. As an example one could predict house prices based on location, size, number of rooms, etc. There are various different methods that has been developed, each with its unique implications. As such we have been motivated to explore specifically \textit{ordinary least squares}, \textit{ridge regression}, and \textit{lasso regression}. These methods have been applied to fit models on real topographic data. They were then be evaluated and improved through resampling techniques.
+
+What is the purpose of what we have done. Is it really just to "explore regression"? What about "investigate wether regression can be used to accuratly predict terrain data"?  The first paragraph of should be a motivation, not too general. Second paragraph: what you have done (in more detail than the abstract). Third: Structure of the repoprt.  References I liked your method of referencing chatGPT! The references are correct, but consider *where* you reference. For instance you might want to find a source that supports that regression analysis is a central tool (i.e. first sentence of the introduction) Looks like a good start! Keep on with the good work :) 
 
 This is some simple reference \cite{Goodfellow2016}.
 This is another elaborate reference \cite{Hastie,raschka2022}
 In conversation with GPT we established that it liked ice cream $^1$.
+
+\section{Theory}
+\subsection{Regression analysis}
+\subsection{OLS}
+\subsection{Ridge}
+\subsection{Lasso}
+\subsection{Bias-Variance trade-off}
+\input{Project_1/sections/Bias-Variance tradeoff}
+The bias term represents the error caused by in-built assumptions in our used method. It consists of the average prediction over all data sets subtracted with the desired regression function.
+The variance term describes the difference between solutions for the data sets and their average(variance of the model arounds its mean) \cite{bishop_2006_pattern}. <- fix this
+
+As for the sigma term, it represents the variance of the error, i.e. the noise of our method, where this quantity is expected to be irreducible. Since the sigma term is irreducible we will omit its interpretation in this section. The equation of minimum squared error(MSE) can be regarded as the expected loss when using our regression model, where we desire to minimize the error. This minimization can be dubbed the bias-variance trade-off, since it is about striking a balance between the bias and variance term. As for interpreting the terms(bias and variance), we will look into 2 scenarios as to how model complexity affects their behaviour.
+Let $\Tilde{y}$ denote our model. The more complex it is, the better it is to go through the data points, hence we will acquire a lower bias. Respectively, the variance will be higher because the a higher model complexity makes the model "move" through more data points and it learns the noise of the training data. This flexibility in the model will lead run into the problem of overfitting our model, it works well on the training data we input, but it will run into problems once given new data it has never "seen", i.e. overfitting makes the model less able to generalize.
+
+If the model $\title{y}$ is too rigid, it will output a high bias and low variance, and the model is not sufficient to fit the data points - we say it will underfit. Similarly to the case with a  complex model, it will result in a poor generalization.
+\subsubsection{SVD}
+\subsubsection{Resampling techniques}
+\subsection{Bootstrap}
+\subsection{Kfold - cross validation}
+\subsection{feature scaling}
+\subsubsection{splitting data}
+
 
 \begin{comment}
     \section{Template: Artificial Intelligence and Machine Learning for nuclear physics in broad strokes}
@@ -244,6 +306,82 @@ and discussions of frequentist and Bayesian methodologies, see, e.g.,
 %Refer to articles as: name(s) of author(s), journal, volume (boldfaced), page and year in parenthesis.
 %Refer to books as: name(s) of author(s), title of book, publisher, place and year, eventual page numbers
 \end{comment}
+
+\section{Methods}
+\subsection{Franke's function}
+\subsection{Implementation-workflow with code}
+\begin{itemize}
+    \item Describe the methods and algorithms
+    \item You need to explain how you implemented the methods and also say something about the structure of your algorithm and present some parts of your code
+    \item You should plug in some calculations to demonstrate your code, such as selected runs used to validate and verify your results. The latter is extremely important!!
+\end{itemize}
+
+\section{Results}
+\subsection{Franke Fucntion}
+Declare no. samples and no. of polymer degree
+
+\subsubsection{OLS}
+\begin{itemize}
+    \item MSE - plot 
+    \item $R^2$ - plot
+    \item $beta$-analysis (function of the degree of polynomials - table?
+\end{itemize}
+
+\subsubsection{Ridge}
+\begin{itemize}
+    \item MSE - plot 
+    \item $R^2$ - plot
+    \item $beta$-analysis (function of the degree of polynomials - table?
+    \item $lambda$-analysis
+\end{itemize}
+
+\subsubsection{Lasso}
+\begin{itemize}
+    \item MSE - plot 
+    \item $R^2$ - plot
+    \item $beta$-analysis (function of the degree of polynomials - table?
+    \item $lambda$-analysis
+\end{itemize}
+
+\subsection{Bias-Variance trade-off}
+
+Perform then a bias-variance analysis of the Franke function by studying the
+MSE value as function of the complexity of your model.
+
+\subsection{Adding complexity with resampling techniques - implementing the kfold cross-validation}
+evaluate again the MSE function resulting from the test folds.
+
+\subsection{Terrain Data}
+\subsubsection{Ridge}
+\subsubsection{Lasso}
+
+\section{Discussion}
+\subsection{Regression Analysis of the Franke's Function}
+\subsubsection{Discussion of Model Performance differences of methods}
+\subsubsection{Differences in the three models}
+\subsubsection{Which model fits the data best?}
+\subsubsection{Bias-Variance Trade-off}
+\subsubsection{ MSE in Kfold Cross-validation vs. MSE in Bootstrap}
+Compare the MSE you get from your cross-validation code with the one you
+got from your bootstrap code. Comment your results. Try 5 − 10 folds.
+In addition to using the ordinary least squares method, you should include
+both Ridge and Lasso regression
+
+Discuss the bias and variance trade-off as function of your model complexity
+(the degree of the polynomial) and the number of data points, and possibly also
+your training and test data using the bootstrap resampling method
+
+
+\subsection{Terrain Data and General Remarks}
+
+\section{Conclusion and furher work}
+
+\section{Appendix}
+\subsection{Analytical expression for the MSE}
+\label{appendix:MSE}
+\include{Project_1/sections/proof}
+
 \bibliographystyle{plain}
 \bibliography{References} % add  references to this file
 \end{document}
+
