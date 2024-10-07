@@ -88,6 +88,18 @@ def plot_R2(R2_buffer):
     plt.grid()
     plt.show()
 
+def plot_test_vs_train(MSE_buffer_test, MSE_buffer_train):
+    plt.plot(MSE_buffer_test, label="Test")
+    plt.plot(MSE_buffer_train, label="Train")
+    plt.title("Mean Squared Error")
+    plt.xlabel("Complexity")
+    plt.ylabel("MSE")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+
+
 
 
 # Standardized scaling should be working well, since the data
@@ -122,6 +134,7 @@ order = 5
 lambdas =[0.0001, 0.001, 0.01, 0.1, 1.0]
 np.random.seed()
 n = 100
+# Adjust the method and data to test different methods and data sets
 method = "SVD"
 data = "2D"
 
@@ -151,7 +164,9 @@ elif data == "2D":
     beta_buffer = np.zeros((order + 1, int((order + 1)*(order + 2)/2)))
 
 
-MSE_buffer = np.zeros((order + 1))
+MSE_buffer_test = np.zeros((order + 1))
+MSE_buffer_train = np.zeros((order + 1))
+
 MSE_buffer_ridge = np.zeros((order + 1))
 MSE_buffer_lasso = np.zeros((order + 1))
 R2_buffer = np.zeros((order + 1))
@@ -194,6 +209,7 @@ for o in range(order+1):
 
     # OLS
     y_pred = (X_test_scaled @ beta)
+    y_pred_train = (X_train_scaled @ beta)
 
     if data == "1D":
         beta_buffer[o, :o+1] = beta[:,0]
@@ -204,11 +220,14 @@ for o in range(order+1):
 
 
 
-    MSE_buffer[o] = MSE(y_test, y_pred)
+
+    MSE_buffer_test[o] = MSE(y_test, y_pred)
+    MSE_buffer_train[o] = MSE(y_train, y_pred_train)
     MSE_buffer_ridge[o] = MSE(y_test, y_pred_ridge)
     MSE_buffer_lasso[o] = MSE(y_test, y_pred_lasso)
     R2_buffer[o] = R2(y_test, y_pred)
 
 
 
+#%%
 
