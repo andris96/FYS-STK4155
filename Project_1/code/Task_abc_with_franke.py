@@ -220,7 +220,7 @@ for o in range(order+1):
         # Lasso
         RegLasso = Lasso(alpha=lambdas[i], fit_intercept=False, max_iter=10000)
         RegLasso.fit(X_train_scaled, y_train)
-        y_pred_lasso = (X_test_scaled @ np.vstack(RegLasso.coef_))
+        y_pred_lasso = RegLasso.predict(X_test_scaled)
 
         # Store the results
         MSE_buffer_ridge[o, i] = MSE(y_test, y_pred_ridge)

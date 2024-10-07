@@ -1,3 +1,4 @@
+#%%
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -152,9 +153,9 @@ def kfold(X_train, y_train, k, method = "OLS", lambda_ = 0.001):
             scores.append(MSE(y_fold_test, y_pred))
 
         if method == "lasso":
-            RegLasso = Lasso(alpha=lambda_, fit_intercept=False)
+            RegLasso = Lasso(alpha=lambda_, fit_intercept=False, max_iter=10000)
             RegLasso.fit(X_fold_train_scaled, y_fold_train)
-            y_pred = (X_fold_test_scaled @ RegLasso.coef_)
+            y_pred = RegLasso.predict(X_fold_test_scaled)
             scores.append(MSE(y_fold_test, y_pred))
 
     return np.mean(scores)
@@ -168,7 +169,7 @@ np.random.seed()
 n = 500
 # Adjust the method and data to test different methods and data sets
 method = "SVD"
-lambdas =[0.0001, 0.001, 0.01, 0.1, 1.0]
+lambdas =[0.001, 0.01, 0.1, 1.0]
 lambda_ = lambdas[0]
 data = "2D"
 
@@ -241,9 +242,9 @@ for o in range(order+1):
     beta_ridge_svd = compute_beta_ridge_svd(X_train_scaled, y_train, lambdas[1])
 
     # Lasso
-    RegLasso = Lasso(alpha=lambdas[1], fit_intercept=False)
+    RegLasso = Lasso(alpha=lambdas[1], fit_intercept=False, max_iter=10000)
     RegLasso.fit(X_train_scaled, y_train)
-    y_pred_lasso = (X_test_scaled @ RegLasso.coef_)
+    y_pred_lasso = RegLasso.predict(X_test_scaled)
 
     # Ridge
     y_pred_ridge = (X_test_scaled @ beta_ridge_svd)
