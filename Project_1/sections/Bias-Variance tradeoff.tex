@@ -1,0 +1,17 @@
+
+We define the cost function:\\
+\begin{equation}
+C(X,\beta)= \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\Tilde{y_i})^2=\mathbb{E}[(y-\Tilde{y})^2]
+\end{equation}
+The last equation describes the expected residual error on the data dataset: 
+\begin{align*}
+    \mathbb{E}[(y-\Tilde{y})^2] = \mathbb{E}[(y-\Tilde{X\beta})^2]
+\end{align*}
+Which can be rewritten as a term consisting of the bias and variance term:
+\begin{equation}
+    \mathbb{E}[(y-\Tilde{y})^2] = Bias[\Tilde{y}]+Var[\Tilde{y}]+\sigma^2
+\end{equation}
+
+The derivation of the term can be accessed in appendix A \ref{appendix:MSE}
+
+

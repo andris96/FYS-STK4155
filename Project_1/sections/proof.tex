@@ -1,4 +1,3 @@
-\section{Exercise 1: Expectation values for ordinary least squares expressions}
 Assumptions:
 \begin{enumerate}
     \item $\varepsilon \text{ is independent from } x \text{ which gives: }\mathbb{E}[\varepsilon]=0)$
@@ -78,15 +77,6 @@ Setting in both the bias and variance terms into the equation we then obtain:
 
 $MSE=Bias(\Tilde{y})+Var(\Tilde{y})+\sigma^2$
 
-\subsection{Discussing the terms}
-\hfill\break
-The bias term represents the error caused by in-built assumptions in our used method. It consists of the average prediction over all data sets subtracted with the desired regression function.
-The variance term describes the difference between solutions for the data sets and their average(variance of the model arounds its mean) \cite{bishop_2006_pattern}.
-
-As for the sigma term, it represents the variance of the error, i.e. the noise of our method, where this quantity is expected to be irreducible. Since the sigma term is irreducible we will omit its interpretation in this section. The equation of minimum squared error(MSE) can be regarded as the expected loss when using our regression model, where we desire to minimize the error. This minimization can be dubbed the bias-variance trade-off, since it is about striking a balance between the bias and variance term. As for interpreting the terms(bias and variance), we will look into 2 scenarios as to how model complexity affects their behaviour.
-Let $\Tilde{y}$ denote our model. The more complex it is, the better it is to go through the data points, hence we will acquire a lower bias. Respectively, the variance will be higher because the a higher model complexity makes the model "move" through more data points and it learns the noise of the training data. This flexibility in the model will lead run into the problem of overfitting our model, it works well on the training data we input, but it will run into problems once given new data it has never "seen", i.e. overfitting makes the model less able to generalize.
-
-If the model $\title{y}$ is too rigid, it will output a high bias and low variance, and the model is not sufficient to fit the data points - we say it will underfit. Similarly to the case with a  complex model, it will result in a poor generalization.
 
 
 
