@@ -42,14 +42,6 @@ def SVD(X, y):
     beta = VT.T @ np.linalg.pinv(np.diag(s)) @ U.T @ y
     return beta
 
-def SVD_inv(X):
-    U, s, VT = np.linalg.svd(X)
-    d = 1.0 / s
-    D = np.zeros(X.shape)
-    D[:X.shape[1], :X.shape[1]] = np.diag(d)
-    UT = U.T
-    V = VT.T
-    return np.matmul(V, np.matmul(D.T, UT))
 
 def compute_beta_ridge_svd(X, y, lambda_):
     U, s, VT = np.linalg.svd(X, full_matrices=False)
@@ -170,7 +162,6 @@ n = 500
 # Adjust the method and data to test different methods and data sets
 method = "SVD"
 lambdas =[0.001, 0.01, 0.1, 1.0]
-lambda_ = lambdas[0]
 data = "2D"
 
 # Make data set with either 1D function or 2D function
@@ -201,13 +192,13 @@ elif data == "2D":
 
 MSE_buffer_test = np.zeros((order + 1))
 MSE_buffer_train = np.zeros((order + 1))
-MSE_buffer_kfold_OLS = np.zeros((order + 1))
-MSE_buffer_kfold_ridge = np.zeros((order + 1))
-MSE_buffer_kfold_lasso = np.zeros((order + 1))
-
-MSE_buffer_ridge = np.zeros((order + 1))
-MSE_buffer_lasso = np.zeros((order + 1))
+MSE_buffer_ridge = np.zeros(((order + 1), len(lambdas)))
+MSE_buffer_lasso = np.zeros(((order + 1), len(lambdas)))
 R2_buffer = np.zeros((order + 1))
+
+MSE_buffer_kfold_OLS = np.zeros(((order + 1), len(lambdas)))
+MSE_buffer_kfold_ridge = np.zeros(((order + 1), len(lambdas)))
+MSE_buffer_kfold_lasso = np.zeros(((order + 1), len(lambdas)))
 
 
 
@@ -241,17 +232,6 @@ for o in range(order+1):
 
     beta_ridge_svd = compute_beta_ridge_svd(X_train_scaled, y_train, lambdas[1])
 
-    # Lasso
-    RegLasso = Lasso(alpha=lambdas[1], fit_intercept=False, max_iter=10000)
-    RegLasso.fit(X_train_scaled, y_train)
-    y_pred_lasso = RegLasso.predict(X_test_scaled)
-
-    # Ridge
-    y_pred_ridge = (X_test_scaled @ beta_ridge_svd)
-
-    # OLS
-    y_pred = (X_test_scaled @ beta)
-    y_pred_train = (X_train_scaled @ beta)
 
     if data == "1D":
         beta_buffer[o, :o+1] = beta[:,0]
@@ -260,15 +240,36 @@ for o in range(order+1):
         num_coeff = int((o + 1)*(o + 2)/2)
         beta_buffer[o, :num_coeff] = beta
 
+     # OLS
+    y_pred = (X_test_scaled @ beta)
+    y_pred_train = (X_train_scaled @ beta)
 
-
-    MSE_buffer_kfold_OLS[o] = kfold(X_train_scaled, y_train, k, "OLS", lambda_)
-    MSE_buffer_kfold_ridge[o] = kfold(X_train_scaled, y_train, k, "ridge", lambda_)
-    MSE_buffer_kfold_lasso[o] = kfold(X_train_scaled, y_train, k, "lasso", lambda_)
+    # Store the results
     MSE_buffer_test[o] = MSE(y_test, y_pred)
     MSE_buffer_train[o] = MSE(y_train, y_pred_train)
-    MSE_buffer_ridge[o] = MSE(y_test, y_pred_ridge)
-    MSE_buffer_lasso[o] = MSE(y_test, y_pred_lasso)
+    R2_buffer[o] = R2(y_test, y_pred)
+
+    # Loop over lambdas for Ridge and Lasso
+    for i in range(len(lambdas)):
+        # Ridge
+        beta_ridge_svd = compute_beta_ridge_svd(X_train_scaled, y_train, lambdas[i])
+        y_pred_ridge = (X_test_scaled @ beta_ridge_svd)
+
+        # Lasso
+        RegLasso = Lasso(alpha=lambdas[i], fit_intercept=False, max_iter=10000)
+        RegLasso.fit(X_train_scaled, y_train)
+        y_pred_lasso = RegLasso.predict(X_test_scaled)
+
+        # Store the results
+        MSE_buffer_ridge[o, i] = MSE(y_test, y_pred_ridge)
+        MSE_buffer_lasso[o, i] = MSE(y_test, y_pred_lasso)
+        MSE_buffer_kfold_OLS[o, i] = kfold(X_train_scaled, y_train, k, "OLS", lambdas[i])
+        MSE_buffer_kfold_ridge[o, i] = kfold(X_train_scaled, y_train, k, "ridge", lambdas[i])
+        MSE_buffer_kfold_lasso[o, i] = kfold(X_train_scaled, y_train, k, "lasso", lambdas[i])
+
+
+    MSE_buffer_test[o] = MSE(y_test, y_pred)
+    MSE_buffer_train[o] = MSE(y_train, y_pred_train)
     R2_buffer[o] = R2(y_test, y_pred)
 
 #%%
