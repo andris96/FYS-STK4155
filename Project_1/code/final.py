@@ -1,3 +1,4 @@
+#%%
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -143,8 +144,10 @@ def Bootstrap(X_train, X_test, y_train, y_test, B):
     return mse, bias, variance
 
 def kfold(X_train, y_train, k, method = "OLS", lambda_ = 0.001):
-    kfold = KFold(n_splits=k).split(X_train_scaled, y_train)
-    scores = []
+    kfold = KFold(n_splits=k).split(X_train, y_train)
+    scores_ols = []
+    scores_ridge = []
+    scores_lasso = []
 
     for train_idx, test_idx in kfold:
         X_fold_train, X_fold_test = X_train[train_idx], X_train[test_idx]
@@ -157,26 +160,47 @@ def kfold(X_train, y_train, k, method = "OLS", lambda_ = 0.001):
         if method == "OLS":
             beta = OLS(X_fold_train_scaled, y_fold_train)
             y_pred = X_fold_test_scaled @ beta
-            scores.append(MSE(y_fold_test, y_pred))
+            scores_ols.append(MSE(y_fold_test, y_pred))
 
         if method == "ridge":
             beta = compute_beta_ridge_svd(X_fold_train_scaled, y_fold_train, lambda_)
             y_pred = X_fold_test_scaled @ beta
-            scores.append(MSE(y_fold_test, y_pred))
+            scores_ridge.append(MSE(y_fold_test, y_pred))
 
         if method == "lasso":
-            RegLasso = Lasso(alpha=lambda_, fit_intercept=False, max_iter=10000)
+            RegLasso = Lasso(alpha=lambda_, fit_intercept=False)
             RegLasso.fit(X_fold_train_scaled, y_fold_train)
-            y_pred = RegLasso.predict(X_fold_test_scaled)
-            scores.append(MSE(y_fold_test, y_pred))
+            y_pred = (X_fold_test_scaled @ RegLasso.coef_)
+            scores_lasso.append(MSE(y_fold_test, y_pred))
 
-    return np.mean(scores)
+        if method == "all":
+            beta = OLS(X_fold_train_scaled, y_fold_train)
+            y_pred = X_fold_test_scaled @ beta
+            scores_ols.append(MSE(y_fold_test, y_pred))
+
+            beta_ridge = compute_beta_ridge_svd(X_fold_train_scaled, y_fold_train, lambda_)
+            y_pred_ridge = X_fold_test_scaled @ beta_ridge
+            scores_ridge.append(MSE(y_fold_test, y_pred_ridge))
+
+            RegLasso = Lasso(alpha=lambda_, fit_intercept=False)
+            RegLasso.fit(X_fold_train_scaled, y_fold_train)
+            y_pred_lasso = RegLasso.predict(X_fold_test_scaled)
+            scores_lasso.append(MSE(y_fold_test, y_pred_lasso))
+
+    if method == "OLS":
+        return np.mean(scores_ols)
+    if method == "ridge":
+        return np.mean(scores_ridge)
+    if method == "lasso":
+        return np.mean(scores_lasso)
+    if method == "all":
+        return np.mean(scores_ols), np.mean(scores_ridge), np.mean(scores_lasso)
 
 
 #%%
 
 k = 10
-order = 10
+order = 15
 np.random.seed()
 n = 500
 # Adjust the method and data to test different methods and data sets
@@ -244,9 +268,6 @@ for o in range(order+1):
     X_test_scaled = X_test.copy()
     X_test_scaled[:, 1:] = (X_test[:, 1:] - X_train_mean) / X_train_std
 
-
-
-
     # Target variable y is generally unecessary to scale for regression methods
 
     if method == "OLS":
@@ -289,13 +310,35 @@ for o in range(order+1):
         # Store the results
         MSE_buffer_ridge[o, i] = MSE(y_test, y_pred_ridge)
         MSE_buffer_lasso[o, i] = MSE(y_test, y_pred_lasso)
-        MSE_buffer_kfold_OLS[o, i] = kfold(X_train_scaled, y_train, k, "OLS", lambdas[i])
-        MSE_buffer_kfold_ridge[o, i] = kfold(X_train_scaled, y_train, k, "ridge", lambdas[i])
-        MSE_buffer_kfold_lasso[o, i] = kfold(X_train_scaled, y_train, k, "lasso", lambdas[i])
+        MSE_buffer_kfold_OLS[o, i], MSE_buffer_kfold_ridge[o, i], MSE_buffer_kfold_lasso[o, i] = kfold(X_train_scaled, y_train, k, "all", lambdas[i])
 
+# plot_bootstrap(MSE_buffer_bootstrap, Bias_buffer_bootstrap, Var_buffer_bootstrap)
+order_complexity = np.arange(order+1)
+import seaborn as sns
+# Set up a grid of subplots
+fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 
-    MSE_buffer_test[o] = MSE(y_test, y_pred)
-    MSE_buffer_train[o] = MSE(y_train, y_pred_train)
-    R2_buffer[o] = R2(y_test, y_pred)
+# Titles for the models
+titles = ['Ridge MSE', 'Lasso MSE', 'OLS MSE']
 
-plot_bootstrap(MSE_buffer_bootstrap, Bias_buffer_bootstrap, Var_buffer_bootstrap)
+# Plot Ridge MSE heatmap
+sns.heatmap(MSE_buffer_ridge, ax=axes[0], xticklabels=lambdas, yticklabels=order_complexity, cmap="viridis")
+axes[0].set_title(titles[0])
+axes[0].set_xlabel('Lambda (log scale)')
+axes[0].set_ylabel('Order Complexity')
+
+# Plot Lasso MSE heatmap
+sns.heatmap(MSE_buffer_lasso, ax=axes[1], xticklabels=lambdas, yticklabels=order_complexity, cmap="viridis")
+axes[1].set_title(titles[1])
+axes[1].set_xlabel('Lambda (log scale)')
+axes[1].set_ylabel('Order Complexity')
+
+# Plot OLS MSE heatmap
+sns.heatmap(MSE_buffer_kfold_OLS, ax=axes[2], xticklabels=lambdas, yticklabels=order_complexity, cmap="viridis")
+axes[2].set_title(titles[2])
+axes[2].set_xlabel('Lambda (log scale)')
+axes[2].set_ylabel('Order Complexity')
+
+# Adjust layout
+plt.tight_layout()
+plt.show()
