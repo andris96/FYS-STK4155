@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -11,13 +12,12 @@ from utils.activation_functions import ActivationFunctions
 Creating a class for FFNN with custom amount of layers and neurons, and different activation functions.
 
 The class will have the following methods:
-- create_design_matrix: create design matrix
 - create_layers: create layers with Xavier/Glorot initialization
 - feed_forward: feed forward through the network and return activations and z values
 - backpropagation: backpropagate through the network and return gradients. Different activation functions will be used.
 - update_parameters: update weights and biases using gradients
 - train_network: train the network using backpropagation and update_parameters
-- plot_heatmap_lr_lambda: plot heatmap of learning rate and regularization parameter
+- predict: make predictions
 
 """
 
@@ -40,6 +40,7 @@ class NeuralNetworkModel:
         self.layer_sizes = layer_sizes
         self.activation_funcs = activation_funcs
         self.layers = self.create_layers()
+        self.mse_history = []
 
         # Check if number of layers and activation functions are equal
         if len(layer_sizes) != len(activation_funcs):
@@ -281,48 +282,14 @@ class NeuralNetworkModel:
         return activations[-1]
 
 
-    def plot_heatmap_lr_lambda(self, X_train, y_train, X_val, y_val, learning_rates, lambdas):
-        """
-        Plot a heatmap of validation loss for different learning rates and lambda values.
 
-        Parameters:
-        -----------
-        X_train: numpy.ndarray
-            Training input data
-        y_train: numpy.ndarray
-            Training target data
-        X_val: numpy.ndarray
-            Validation input data
-        y_val: numpy.ndarray
-            Validation target data
-        learning_rates: list
-            List of learning rate values to test
-        lambdas: list
-            List of lambda (regularization) values to test
-        """
-        val_losses = []
 
-        layer_sizes = [8, 4, 1]
-        activation_funcs = ['sigmoid', 'sigmoid', 'linear']
-
-        for lr in learning_rates:
-            row_losses = []
-            for lam in lambdas:
-                model = NeuralNetworkModel(input_size=X_train.shape[1], layer_sizes=layer_sizes, activation_funcs=activation_funcs)
-                _, val_loss = model.train_network(X_train,
-                                                  y_train,
-                                                  X_val,
-                                                  y_val,
-                                                  learning_rate=lr,
-                                                  epochs=1000,
-                                                  lambda_reg=lam,
-                                                  batch_size=32)
-                row_losses.append(val_loss[-1])
-            val_losses.append(row_losses)
-
-        plt.figure(figsize=(10, 8))
-        sns.heatmap(val_losses, xticklabels=lambdas, yticklabels=learning_rates, cmap="YlOrRd")
-        plt.title("Validation Loss Heatmap")
-        plt.xlabel("Lambda")
-        plt.ylabel("Learning Rate")
+    # plot mse as function of epochs
+    def plot_loss(self, train_losses, val_losses):
+        plt.figure(figsize=(10, 6))
+        plt.plot(train_losses, label="Train Loss")
+        plt.plot(val_losses, label="Validation Loss")
+        plt.xlabel("Epochs")
+        plt.ylabel("Loss")
+        plt.legend()
         plt.show()
