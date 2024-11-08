@@ -6,7 +6,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 import seaborn as sns
-from utils.activation_functions import ActivationFunctions
 
 """
 Creating a class for FFNN with custom amount of layers and neurons, and different activation functions.
